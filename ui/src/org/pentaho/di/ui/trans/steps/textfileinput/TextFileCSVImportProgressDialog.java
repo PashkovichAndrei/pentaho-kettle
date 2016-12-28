@@ -262,7 +262,7 @@ public class TextFileCSVImportProgressDialog {
 
     if ( meta.hasHeader() ) {
 
-      while ( line != null && skipped < meta.getNrHeaderLines() ) {
+      while ( line != null && skipped <= meta.getNrHeaderLines() ) {
         line = TextFileInput.getLine( log, reader, encodingType, fileFormatType, lineBuffer );
         skipped++;
         fileLineNumber++;
