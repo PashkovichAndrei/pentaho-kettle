@@ -1441,23 +1441,31 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         pk = info.getGeneratedKeyField();
       }
 
-      SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, pk, autoInc, pk );
-      if ( !sql.hasError() ) {
-        if ( sql.hasSQL() ) {
-          SQLEditor sqledit =
-            new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
-              .getSQL() );
-          sqledit.open();
+      if ( isValidRowMeta(prev) ) {
+        SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, pk, autoInc, pk );
+        if ( !sql.hasError() ) {
+          if ( sql.hasSQL() ) {
+            SQLEditor sqledit =
+                    new SQLEditor( transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql
+                            .getSQL() );
+            sqledit.open();
+          } else {
+            MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
+            mb.setMessage( BaseMessages.getString( PKG, "TableOutputDialog.NoSQL.DialogMessage" ) );
+            mb.setText( BaseMessages.getString( PKG, "TableOutputDialog.NoSQL.DialogTitle" ) );
+            mb.open();
+          }
         } else {
-          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-          mb.setMessage( BaseMessages.getString( PKG, "TableOutputDialog.NoSQL.DialogMessage" ) );
-          mb.setText( BaseMessages.getString( PKG, "TableOutputDialog.NoSQL.DialogTitle" ) );
+          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+          mb.setMessage( sql.getError() );
+          mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
           mb.open();
         }
       } else {
+        // TODO: extract as separate method & remove code duplication + translate warning message to another languages.
         MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( sql.getError() );
-        mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
+        mb.setMessage( BaseMessages.getString( PKG, "TableOutputDialog.NoSQL.EmptyCSVFields" ) );
+        mb.setText( BaseMessages.getString( PKG, "TableOutputDialog.NoSQL.DialogTitle" ) );
         mb.open();
       }
     } catch ( KettleException ke ) {
@@ -1465,5 +1473,17 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         shell, BaseMessages.getString( PKG, "TableOutputDialog.BuildSQLError.DialogTitle" ), BaseMessages
           .getString( PKG, "TableOutputDialog.BuildSQLError.DialogMessage" ), ke );
     }
+  }
+
+  private boolean isValidRowMeta(RowMetaInterface rowMeta) {
+    boolean result = true;
+    for ( ValueMetaInterface value : rowMeta.getValueMetaList() ) {
+      String name = value.getName();
+      if ( name == null || name.isEmpty() ) {
+        result = false;
+        break;
+      }
+    }
+    return result;
   }
 }
