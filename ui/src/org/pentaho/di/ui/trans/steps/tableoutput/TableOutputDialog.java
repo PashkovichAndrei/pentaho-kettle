@@ -2,7 +2,7 @@
  *
  * Pentaho Data Integration
  *
- * Copyright (C) 2002-2016 by Pentaho : http://www.pentaho.com
+ * Copyright (C) 2002-2017 by Pentaho : http://www.pentaho.com
  *
  *******************************************************************************
  *
@@ -1450,23 +1450,18 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                             .getSQL() );
             sqledit.open();
           } else {
-            MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_INFORMATION );
-            mb.setMessage( BaseMessages.getString( PKG, "TableOutputDialog.NoSQL.DialogMessage" ) );
-            mb.setText( BaseMessages.getString( PKG, "TableOutputDialog.NoSQL.DialogTitle" ) );
-            mb.open();
+            String message = getBaseMessage( "TableOutputDialog.NoSQL.DialogMessage" );
+            String text = getBaseMessage( "TableOutputDialog.NoSQL.DialogTitle" );
+            showMessage(shell, SWT.OK | SWT.ICON_INFORMATION, message, text );
           }
         } else {
-          MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-          mb.setMessage( sql.getError() );
-          mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
-          mb.open();
+          String text = getBaseMessage( "System.Dialog.Error.Title" );
+          showMessage( shell, SWT.OK | SWT.ICON_ERROR, sql.getError(), text );
         }
       } else {
-        // TODO: extract as separate method & remove code duplication + translate warning message to another languages.
-        MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-        mb.setMessage( BaseMessages.getString( PKG, "TableOutputDialog.NoSQL.EmptyCSVFields" ) );
-        mb.setText( BaseMessages.getString( PKG, "TableOutputDialog.NoSQL.DialogTitle" ) );
-        mb.open();
+        String message = getBaseMessage( "TableOutputDialog.NoSQL.EmptyCSVFields" );
+        String text = getBaseMessage( "TableOutputDialog.NoSQL.DialogTitle" );
+        showMessage(shell, SWT.OK | SWT.ICON_ERROR, message, text);
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
@@ -1475,15 +1470,24 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     }
   }
 
-  private boolean isValidRowMeta(RowMetaInterface rowMeta) {
-    boolean result = true;
+  private void showMessage( Shell shell, int style, String message, String text ) {
+    MessageBox mb = new MessageBox( shell, style );
+    mb.setMessage( message );
+    mb.setText( text );
+    mb.open();
+  }
+
+  private static boolean isValidRowMeta( RowMetaInterface rowMeta ) {
     for ( ValueMetaInterface value : rowMeta.getValueMetaList() ) {
       String name = value.getName();
       if ( name == null || name.isEmpty() ) {
-        result = false;
-        break;
+        return false;
       }
     }
-    return result;
+    return true;
+  }
+
+  private static String getBaseMessage( String str ) {
+    return BaseMessages.getString( PKG, str );
   }
 }
