@@ -59,7 +59,7 @@ public class TableOutputDialogTest {
 
   private RowMetaInterface createRowMeta( String[] args, boolean hasEmptyFields ) {
     RowMetaInterface result = new RowMeta();
-    if (hasEmptyFields) {
+    if ( hasEmptyFields ) {
       result.addValueMeta( new ValueMetaString( "" ) );
     }
     for ( String s : args ) {

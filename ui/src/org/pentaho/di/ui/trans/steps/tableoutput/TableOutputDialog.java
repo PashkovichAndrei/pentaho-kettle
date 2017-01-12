@@ -1441,7 +1441,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         pk = info.getGeneratedKeyField();
       }
 
-      if ( isValidRowMeta(prev) ) {
+      if ( isValidRowMeta( prev ) ) {
         SQLStatement sql = info.getSQLStatements( transMeta, stepMeta, prev, pk, autoInc, pk );
         if ( !sql.hasError() ) {
           if ( sql.hasSQL() ) {
@@ -1452,7 +1452,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
           } else {
             String message = getBaseMessage( "TableOutputDialog.NoSQL.DialogMessage" );
             String text = getBaseMessage( "TableOutputDialog.NoSQL.DialogTitle" );
-            showMessage(shell, SWT.OK | SWT.ICON_INFORMATION, message, text );
+            showMessage( shell, SWT.OK | SWT.ICON_INFORMATION, message, text );
           }
         } else {
           String text = getBaseMessage( "System.Dialog.Error.Title" );
@@ -1461,7 +1461,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
       } else {
         String message = getBaseMessage( "TableOutputDialog.NoSQL.EmptyCSVFields" );
         String text = getBaseMessage( "TableOutputDialog.NoSQL.DialogTitle" );
-        showMessage(shell, SWT.OK | SWT.ICON_ERROR, message, text);
+        showMessage( shell, SWT.OK | SWT.ICON_ERROR, message, text );
       }
     } catch ( KettleException ke ) {
       new ErrorDialog(
